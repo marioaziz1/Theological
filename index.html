@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#080a0f">
+<title>Theological Mastery Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+
+/* ── TOKENS ── */
+:root {
+  --bg0:#080a0f; --bg1:#0d1117; --bg2:#111520; --bg3:#161b27;
+  --bdr:#252d42; --bdrl:#2e3a56;
+  --gold:#c8a96e; --goldl:#e4c98a; --goldd:#9a7d4e;
+  --amber:#d4843a; --em:#2d6a4f; --eml:#40916c;
+  --t1:#e8e0d0; --t2:#a09080; --t3:#5a5048;
+  --r:8px; --rl:14px;
+  --hh:54px; --bnh:62px;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+html { -webkit-text-size-adjust:100%; }
+
+body {
+  font-family:'Noto Naskh Arabic','Amiri',serif;
+  background:var(--bg0); color:var(--t1);
+  direction:rtl; min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── TYPOGRAPHY ── */
+button, select, input, textarea { font-family:inherit; }
+
+/* ── HEADER ── */
+.hdr {
+  position:fixed; top:0; left:0; right:0; height:var(--hh);
+  background:var(--bg1); border-bottom:1px solid var(--bdr);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px; z-index:200;
+}
+.logo { display:flex; align-items:center; gap:9px; }
+.logo-mark {
+  width:34px; height:34px;
+  background:linear-gradient(135deg,var(--goldd),var(--gold));
+  border-radius:7px; display:flex; align-items:center; justify-content:center;
+  font-family:'Cinzel',serif; font-size:17px; font-weight:900; color:var(--bg0);
+  flex-shrink:0;
+}
+.logo-t { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:var(--gold); letter-spacing:1.5px; text-transform:uppercase; line-height:1.1; }
+.logo-s { font-size:9px; color:var(--t3); }
+.hdr-right { display:flex; align-items:center; gap:8px; }
+.streak { display:flex; align-items:center; gap:4px; padding:4px 10px; background:rgba(212,132,58,.12); border:1px solid rgba(212,132,58,.3); border-radius:20px; font-size:11px; color:var(--amber); white-space:nowrap; }
+.menu-btn { width:38px; height:38px; border-radius:var(--r); background:var(--bg2); border:1px solid var(--bdr); color:var(--t2); font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.desk-nav { display:none; align-items:center; gap:3px; }
+.desk-nb { padding:7px 13px; background:transparent; border:1px solid transparent; border-radius:var(--r); color:var(--t2); font-size:12px; white-space:nowrap; cursor:pointer; transition:all .2s; }
+.desk-nb:hover { color:var(--t1); border-color:var(--bdr); background:var(--bg2); }
+.desk-nb.act { color:var(--gold); border-color:var(--goldd); background:rgba(200,169,110,.08); }
+
+/* ── LAYOUT BODY ── */
+.layout { display:flex; padding-top:var(--hh); min-height:100vh; }
+
+/* ── DESKTOP SIDEBAR ── */
+.desk-sb {
+  display:none;
+  width:280px; flex-shrink:0;
+  background:var(--bg1); border-inline-start:1px solid var(--bdr);
+  position:fixed; top:var(--hh); bottom:0; right:0;
+  overflow-y:auto; overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* ── MAIN CONTENT ── */
+.main-wrap {
+  flex:1; min-width:0;
+  overflow-y:auto;
+  padding-bottom:var(--bnh);
+}
+
+/* ── BOTTOM NAV ── */
+.bot-nav {
+  position:fixed; bottom:0; left:0; right:0; height:var(--bnh);
+  background:var(--bg1); border-top:1px solid var(--bdr);
+  display:grid; grid-template-columns:repeat(5,1fr);
+  z-index:200; box-shadow:0 -4px 20px rgba(0,0,0,.5);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bn-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; background:transparent; border:none; color:var(--t3); font-size:9px; cursor:pointer; padding:4px; transition:color .2s; }
+.bn-btn .bi { font-size:22px; line-height:1; }
+.bn-btn.act { color:var(--gold); }
+
+/* ── VIEWS ── */
+.view { display:none; }
+.view.act { display:block; }
+
+/* ── DRAWER (mobile sidebar) ── */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:300; }
+.overlay.open { display:block; }
+.drawer {
+  position:fixed; top:0; bottom:0;
+  width:min(88vw, 300px);
+  background:var(--bg1); z-index:301;
+  display:flex; flex-direction:column;
+  transform:translateX(-100%); transition:transform .28s ease;
+  overflow:hidden;
+}
+[dir=rtl] .drawer { left:0; right:auto; border-right:1px solid var(--bdr); transform:translateX(-100%); }
+.drawer.open { transform:translateX(0); }
+.drawer-hdr { display:flex; align-items:center; justify-content:space-between; padding:14px; border-bottom:1px solid var(--bdr); flex-shrink:0; }
+.drawer-title { font-family:'Cinzel',serif; font-size:12px; color:var(--gold); letter-spacing:2px; }
+.close-btn { width:32px; height:32px; border-radius:var(--r); background:var(--bg3); border:1px solid var(--bdr); color:var(--t2); font-size:16px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.drawer-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+
+/* ── SHARED ── */
+.page-hdr { padding:14px 14px 10px; border-bottom:1px solid var(--bdr); background:var(--bg1); position:sticky; top:0; z-index:10; }
+.page-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:var(--gold); }
+.page-sub { font-size:11px; color:var(--t3); margin-top:2px; }
+
+.card { background:var(--bg1); border:1px solid var(--bdr); border-radius:var(--rl); padding:16px; position:relative; overflow:hidden; }
+.card::before { content:''; position:absolute; top:0; inset-inline-end:0; width:60%; height:1px; background:linear-gradient(to right,transparent,rgba(200,169,110,.2)); }
+.clbl { font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--t3); margin-bottom:6px; }
+.cval { font-family:'Cinzel',serif; font-size:30px; font-weight:700; color:var(--gold); line-height:1; }
+.csub { font-size:11px; color:var(--t3); margin-top:4px; }
+
+.slbl { font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--t3); padding:10px 12px 5px; }
+
+/* Progress ring */
+.ring-wrap { display:flex; align-items:center; justify-content:center; padding:14px 0 8px; }
+.pr { position:relative; width:90px; height:90px; }
+.pr svg { transform:rotate(-90deg); }
+.pr-track { fill:none; stroke:var(--bg3); stroke-width:7; }
+.pr-fill { fill:none; stroke:var(--gold); stroke-width:7; stroke-linecap:round; transition:stroke-dashoffset .8s; }
+.pr-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.pr-pct { font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:var(--gold); line-height:1; }
+.pr-lbl { font-family:'IBM Plex Mono',monospace; font-size:8px; color:var(--t3); }
+
+.sgrid { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:0 12px 12px; }
+.sc { background:var(--bg2); border:1px solid var(--bdr); border-radius:var(--r); padding:9px; text-align:center; }
+.sv { font-family:'Cinzel',serif; font-size:17px; font-weight:700; color:var(--gold); line-height:1; }
+.sl { font-size:10px; color:var(--t3); margin-top:2px; }
+
+/* Sidebar level list */
+.lvl-list { padding:0 8px 16px; }
+.li { border-radius:var(--r); overflow:hidden; margin-bottom:3px; border:1px solid transparent; }
+.li.act-li { border-color:var(--goldd); }
+.lh { display:flex; align-items:center; gap:8px; padding:10px; cursor:pointer; background:var(--bg2); min-height:46px; }
+.lh:hover { background:var(--bg3); }
+.li.act-li .lh { background:rgba(200,169,110,.07); }
+.lnum { font-family:'Cinzel',serif; font-size:10px; font-weight:700; color:var(--t3); min-width:18px; }
+.lnm { flex:1; font-size:11px; line-height:1.4; color:var(--t2); }
+.li.act-li .lnm { color:var(--t1); }
+.lprbar { height:2px; background:var(--bg3); }
+.lprfill { height:100%; background:linear-gradient(90deg,var(--goldd),var(--gold)); transition:width .5s; }
+.lchev { font-size:9px; color:var(--t3); transition:transform .2s; flex-shrink:0; }
+.li.open-li .lchev { transform:rotate(90deg); }
+.ul { display:none; background:var(--bg1); padding:3px 6px 6px; }
+.li.open-li .ul { display:block; }
+.uit { display:flex; align-items:center; gap:8px; padding:9px 8px; border-radius:5px; cursor:pointer; min-height:42px; border:1px solid transparent; margin-bottom:2px; }
+.uit:hover { background:var(--bg3); }
+.uit.sel-u { background:rgba(200,169,110,.07); border-color:var(--bdr); }
+.udot { width:8px; height:8px; border-radius:50%; flex-shrink:0; border:1.5px solid var(--bdrl); }
+.udot.ip { border-color:var(--amber); background:rgba(212,132,58,.35); }
+.udot.dn { border-color:var(--eml); background:var(--eml); }
+.unm { font-size:11px; color:var(--t2); line-height:1.4; flex:1; }
+.uit.sel-u .unm { color:var(--t1); }
+
+/* Dashboard grid */
+.dash-pad { padding:12px; }
+.dash-single { display:flex; flex-direction:column; gap:10px; }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+/* Focus */
+.fi { background:var(--bg2); border:1px solid var(--bdr); border-inline-start:3px solid var(--gold); border-radius:var(--r); padding:10px 12px; font-size:11px; color:var(--t2); margin-bottom:6px; cursor:pointer; }
+.fi:hover { background:var(--bg3); }
+.fi strong { color:var(--gold); font-size:12px; display:block; margin-bottom:2px; }
+
+/* Mini roadmap */
+.mrm { display:flex; flex-direction:column; align-items:center; }
+.mrm-n { background:var(--bg3); border:1px solid var(--bdr); border-radius:4px; padding:5px 12px; font-size:10px; color:var(--t2); text-align:center; min-width:100px; }
+.mrm-a { width:1px; height:10px; background:var(--bdr); }
+
+/* Level progress bars */
+.lprow { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+.lprow-n { font-family:'Cinzel',serif; font-size:10px; color:var(--t3); min-width:16px; }
+.lprow-nm { font-size:10px; color:var(--t2); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.lprow-bar { width:70px; height:4px; background:var(--bg3); border-radius:2px; overflow:hidden; flex-shrink:0; }
+.lprow-fill { height:100%; background:linear-gradient(90deg,var(--goldd),var(--gold)); border-radius:2px; }
+.lprow-cnt { font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--t3); min-width:28px; }
+
+/* Queue */
+.qi { display:flex; align-items:center; gap:7px; padding:8px 10px; background:var(--bg2); border:1px solid var(--bdr); border-radius:var(--r); font-size:11px; color:var(--t2); margin-bottom:5px; cursor:pointer; }
+.qi:hover { background:var(--bg3); }
+.qi-n { width:20px; height:20px; border-radius:4px; background:var(--bg3); display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:9px; color:var(--goldd); flex-shrink:0; }
+
+/* Empty */
+.empty { display:flex; flex-direction:column; align-items:center; padding:24px 12px; text-align:center; color:var(--t3); gap:8px; }
+.empty-i { font-size:30px; opacity:.4; }
+.empty-t { font-size:12px; line-height:1.6; max-width:240px; }
+
+/* ── LEVELS VIEW ── */
+.lcard { background:var(--bg1); border:1px solid var(--bdr); border-radius:var(--rl); overflow:hidden; margin-bottom:10px; }
+.lcard.act-lc { border-color:var(--goldd); box-shadow:0 0 16px rgba(200,169,110,.1); }
+.lch { display:flex; align-items:center; gap:12px; padding:14px; cursor:pointer; min-height:74px; }
+.lch:hover { background:rgba(200,169,110,.03); }
+.lcnum { width:38px; height:38px; background:var(--bg3); border:1px solid var(--bdr); border-radius:var(--r); display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:var(--gold); flex-shrink:0; }
+.lcinfo { flex:1; min-width:0; }
+.lctitle { font-size:14px; color:var(--t1); margin-bottom:3px; line-height:1.3; }
+.lcmeta { display:flex; align-items:center; gap:8px; }
+.lccnt { font-size:10px; color:var(--t3); }
+.lcpbar { height:3px; background:var(--bg3); border-radius:2px; overflow:hidden; margin-top:6px; }
+.lcpfill { height:100%; background:linear-gradient(90deg,var(--goldd),var(--gold)); border-radius:2px; }
+.lcbtns { display:flex; gap:5px; flex-shrink:0; align-items:center; }
+.btn { padding:7px 12px; border-radius:var(--r); font-size:11px; border:1px solid transparent; cursor:pointer; min-height:36px; display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; transition:all .2s; }
+.btn-g { background:transparent; color:var(--t2); border-color:var(--bdr); }
+.btn-g:hover { background:var(--bg3); color:var(--t1); }
+.btn-gold { background:rgba(200,169,110,.1); color:var(--gold); border-color:var(--goldd); }
+.btn-gold:hover { background:rgba(200,169,110,.2); }
+.ucgrid { display:none; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:8px; padding:0 14px 14px; }
+.lcard.open-lc .ucgrid { display:grid; }
+.uc { background:var(--bg2); border:1px solid var(--bdr); border-radius:var(--r); padding:11px; cursor:pointer; transition:all .2s; }
+.uc:hover, .uc.sel-uc { border-color:var(--goldd); background:rgba(200,169,110,.05); }
+.ucst { display:inline-flex; align-items:center; font-size:9px; padding:2px 7px; border-radius:10px; margin-bottom:6px; font-family:'IBM Plex Mono',monospace; }
+.ucst.ns { background:var(--bg3); color:var(--t3); border:1px solid var(--bdr); }
+.ucst.ip { background:rgba(212,132,58,.1); color:var(--amber); border:1px solid rgba(212,132,58,.3); }
+.ucst.dn { background:rgba(64,145,108,.1); color:var(--eml); border:1px solid rgba(64,145,108,.3); }
+.ucnm { font-size:11px; color:var(--t2); line-height:1.5; }
+.ucacts { display:flex; gap:3px; margin-top:8px; }
+.usb { flex:1; padding:6px 2px; border:1px solid var(--bdr); border-radius:4px; background:transparent; font-size:11px; color:var(--t3); cursor:pointer; text-align:center; min-height:32px; transition:all .15s; }
+.usb:hover { background:var(--bg3); color:var(--t2); }
+.usb.as { background:rgba(200,169,110,.1); border-color:var(--goldd); color:var(--gold); }
+
+/* Detail panel */
+.dpanel { overflow:hidden; max-height:0; transition:max-height .3s; border-top:1px solid var(--bdr); background:var(--bg1); }
+.dpanel.open { max-height:550px; }
+.dpinner { padding:14px; overflow-y:auto; max-height:550px; -webkit-overflow-scrolling:touch; }
+.dtabs { display:flex; gap:3px; padding-bottom:10px; border-bottom:1px solid var(--bdr); margin-bottom:12px; overflow-x:auto; }
+.dtab { padding:7px 14px; border-radius:var(--r); font-size:12px; border:1px solid transparent; background:transparent; color:var(--t2); cursor:pointer; white-space:nowrap; min-height:36px; transition:all .2s; }
+.dtab:hover { background:var(--bg2); color:var(--t1); }
+.dtab.act-dt { color:var(--gold); border-color:var(--goldd); background:rgba(200,169,110,.07); }
+
+/* Prompt */
+.pcont { display:flex; flex-direction:column; gap:10px; }
+.phdr { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; padding-bottom:10px; border-bottom:1px solid var(--bdr); }
+.ptitle { font-family:'Cinzel',serif; font-size:12px; color:var(--gold); flex:1; line-height:1.5; }
+.pcopy { padding:7px 13px; background:rgba(200,169,110,.1); border:1px solid var(--goldd); border-radius:var(--r); color:var(--gold); font-size:11px; cursor:pointer; flex-shrink:0; min-height:36px; transition:all .2s; }
+.pcopy:hover { background:rgba(200,169,110,.2); }
+.pbox { background:var(--bg0); border:1px solid var(--bdr); border-radius:var(--r); padding:14px; font-size:11px; line-height:2; color:var(--t2); max-height:320px; overflow-y:auto; white-space:pre-wrap; direction:rtl; -webkit-overflow-scrolling:touch; }
+.ph2 { color:var(--gold); font-weight:600; }
+.psh { color:var(--amber); display:block; margin-top:12px; margin-bottom:3px; font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; }
+
+/* Notes */
+.narea { width:100%; min-height:90px; background:var(--bg0); border:1px solid var(--bdr); border-radius:var(--r); padding:12px; color:var(--t1); font-size:13px; line-height:1.8; resize:vertical; direction:rtl; -webkit-appearance:none; }
+.narea:focus { outline:none; border-color:var(--goldd); }
+.nsave { font-size:10px; color:var(--eml); font-family:'IBM Plex Mono',monospace; opacity:0; transition:opacity .3s; }
+.nsave.vis { opacity:1; }
+.ncard { background:var(--bg1); border:1px solid var(--bdr); border-radius:var(--rl); overflow:hidden; margin-bottom:10px; }
+.nch { display:flex; align-items:center; gap:9px; padding:14px; cursor:pointer; min-height:52px; }
+.nch:hover { background:var(--bg2); }
+.ncb { padding:14px; flex-direction:column; gap:10px; display:none; border-top:1px solid var(--bdr); }
+.ncb.show { display:flex; }
+
+/* Roadmap */
+.rm-wrap { padding:16px 14px; display:flex; flex-direction:column; align-items:center; }
+.rm-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:22px; text-align:center; }
+.rm-stage { display:flex; flex-direction:column; align-items:center; width:100%; max-width:580px; }
+.rm-node { width:100%; text-align:center; border-radius:var(--rl); padding:16px 20px; border:1px solid var(--bdr); background:var(--bg1); }
+.rm-node.cr { border-color:rgba(200,169,110,.5); background:rgba(200,169,110,.04); }
+.rm-node.fl { border-color:rgba(139,38,53,.5); background:rgba(139,38,53,.04); }
+.rm-node.is { border-color:rgba(29,78,137,.5); background:rgba(29,78,137,.04); }
+.rm-node.pr { border-color:rgba(45,106,79,.5); background:rgba(45,106,79,.04); }
+.rm-node.ch { border-color:rgba(200,169,110,.85); background:rgba(200,169,110,.08); box-shadow:0 0 22px rgba(200,169,110,.1); }
+.rm-node.cu { border-color:rgba(46,109,180,.5); background:rgba(46,109,180,.04); }
+.rm-node.nc { border-color:rgba(64,145,108,.7); background:rgba(64,145,108,.06); }
+.rm-icon { font-size:24px; margin-bottom:6px; display:block; }
+.rm-t { font-family:'Cinzel',serif; font-size:14px; font-weight:700; margin-bottom:4px; }
+.rm-node.cr .rm-t { color:var(--gold); }
+.rm-node.fl .rm-t { color:#c0414f; }
+.rm-node.is .rm-t { color:#2e6db4; }
+.rm-node.pr .rm-t { color:var(--eml); }
+.rm-node.ch .rm-t { color:var(--goldl); }
+.rm-node.cu .rm-t { color:#5a9bd5; }
+.rm-node.nc .rm-t { color:#52b788; }
+.rm-d { font-size:11px; color:var(--t3); margin-bottom:10px; line-height:1.5; }
+.rm-tags { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; }
+.rm-tag { font-family:'IBM Plex Mono',monospace; font-size:8px; padding:3px 8px; border-radius:10px; background:var(--bg2); border:1px solid var(--bdr); color:var(--t3); cursor:pointer; min-height:24px; display:inline-flex; align-items:center; transition:all .15s; }
+.rm-tag:hover { border-color:var(--goldd); color:var(--gold); }
+.rm-conn { width:2px; height:22px; background:linear-gradient(to bottom,var(--bdr),transparent); position:relative; }
+.rm-conn::after { content:'▾'; position:absolute; bottom:0; left:50%; transform:translateX(-50%); color:var(--bdr); font-size:10px; }
+
+/* Prompts page */
+.ppage-grid { display:flex; flex-direction:column; gap:12px; padding:14px; }
+.pv-sel { width:100%; background:var(--bg2); border:1px solid var(--bdr); border-radius:var(--r); padding:10px 12px; color:var(--t1); font-size:13px; direction:rtl; outline:none; -webkit-appearance:none; min-height:46px; cursor:pointer; }
+.pv-sel:focus { border-color:var(--goldd); }
+
+/* Search */
+.sbar { display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--bg2); border:1px solid var(--bdr); border-radius:var(--r); margin-bottom:10px; }
+.sbar input { flex:1; background:transparent; border:none; color:var(--t1); font-size:13px; outline:none; direction:rtl; min-height:28px; }
+.sbar input::placeholder { color:var(--t3); }
+
+/* Toast */
+.toast { position:fixed; bottom:calc(var(--bnh) + 10px); left:14px; right:14px; background:var(--bg2); border:1px solid var(--eml); border-radius:var(--r); padding:11px 15px; font-size:12px; color:var(--eml); z-index:500; opacity:0; transform:translateY(6px); transition:all .3s; pointer-events:none; text-align:center; }
+.toast.show { opacity:1; transform:translateY(0); }
+
+/* ── DESKTOP (≥960px) ── */
+@media (min-width:960px) {
+  .menu-btn { display:none; }
+  .bot-nav { display:none; }
+  .desk-nav { display:flex; }
+  .desk-sb { display:block; }
+  .main-wrap { margin-inline-end:280px; padding-bottom:0; }
+  .toast { bottom:20px; left:auto; right:20px; width:auto; text-align:right; }
+
+  /* Dashboard: 3 col grid on desktop */
+  .dash-pad { padding:18px; }
+  .dash-single { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .dash-single .card { margin:0; }
+  .span2 { grid-column:span 2; }
+  .span3 { grid-column:span 3; }
+  .row2 { display:contents; }
+}
+
+@media (min-width:1200px) {
+  .desk-sb { width:300px; }
+  .main-wrap { margin-inline-end:300px; }
+  .dash-single { grid-template-columns:repeat(4,1fr); }
+  .span3 { grid-column:span 4; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:var(--bg1); }
+::-webkit-scrollbar-thumb { background:var(--bdrl); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="hdr">
+  <div class="logo">
+    <div class="logo-mark">ل</div>
+    <div>
+      <div class="logo-t">Theological Mastery</div>
+      <div class="logo-s">لوحة التحكم اللاهوتي</div>
+    </div>
+  </div>
+
+  <nav class="desk-nav">
+    <button class="desk-nb act" id="dnb-dashboard" onclick="goView('dashboard')">الرئيسية</button>
+    <button class="desk-nb" id="dnb-levels" onclick="goView('levels')">المستويات</button>
+    <button class="desk-nb" id="dnb-roadmap" onclick="goView('roadmap')">خريطة المعرفة</button>
+    <button class="desk-nb" id="dnb-notes" onclick="goView('notes')">الملاحظات</button>
+    <button class="desk-nb" id="dnb-prompts" onclick="goView('prompts')">مولّد البرومبت</button>
+  </nav>
+
+  <div class="hdr-right">
+    <div class="streak">🔥 <span id="stk">1</span> يوم</div>
+    <button class="menu-btn" onclick="openDrawer()">☰</button>
+  </div>
+</header>
+
+<!-- ═══ LAYOUT ═══ -->
+<div class="layout">
+
+  <!-- Desktop Sidebar -->
+  <aside class="desk-sb" id="deskSb">
+    <div class="slbl" style="padding-top:14px">التقدم الكلي</div>
+    <div class="ring-wrap">
+      <div class="pr">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle class="pr-track" cx="45" cy="45" r="38"/>
+          <circle class="pr-fill" id="prcD" cx="45" cy="45" r="38" stroke-dasharray="239" stroke-dashoffset="239"/>
+        </svg>
+        <div class="pr-center">
+          <span class="pr-pct" id="prPctD">0%</span>
+          <span class="pr-lbl">مكتمل</span>
+        </div>
+      </div>
+    </div>
+    <div class="sgrid">
+      <div class="sc"><div class="sv">13</div><div class="sl">المستويات</div></div>
+      <div class="sc"><div class="sv" id="totUD">0</div><div class="sl">الوحدات</div></div>
+      <div class="sc"><div class="sv" id="doneUD">0</div><div class="sl">مكتملة</div></div>
+      <div class="sc"><div class="sv" id="ipUD">0</div><div class="sl">جارية</div></div>
+    </div>
+    <div class="slbl">التنقل</div>
+    <div class="lvl-list" id="sbD"></div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-wrap" id="mainWrap">
+
+    <!-- DASHBOARD -->
+    <div class="view act" id="view-dashboard">
+      <div class="page-hdr">
+        <div class="page-title">لوحة التحكم</div>
+        <div class="page-sub">نظرة عامة على رحلتك اللاهوتية</div>
+      </div>
+      <div class="dash-pad">
+        <div class="dash-single" id="dashGrid"></div>
+      </div>
+    </div>
+
+    <!-- LEVELS -->
+    <div class="view" id="view-levels">
+      <div class="page-hdr">
+        <div class="page-title">المستويات الدراسية</div>
+        <div class="page-sub">اختر مستوى لعرض وحداته وتتبع تقدمك</div>
+      </div>
+      <div style="padding:12px" id="lvCont"></div>
+      <div class="dpanel" id="dpanel">
+        <div class="dpinner">
+          <div class="dtabs">
+            <button class="dtab act-dt" id="dt-prompt" onclick="switchDTab('prompt')">🤖 البرومبت</button>
+            <button class="dtab" id="dt-notes" onclick="switchDTab('notes')">📝 الملاحظات</button>
+            <button class="dtab" id="dt-info" onclick="switchDTab('info')">ℹ️ معلومات</button>
+          </div>
+          <div id="dtabCont"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROADMAP -->
+    <div class="view" id="view-roadmap">
+      <div class="page-hdr">
+        <div class="page-title">خريطة المعرفة الكتابية</div>
+        <div class="page-sub">رحلة القصة الكبرى من الخلق إلى الخليقة الجديدة</div>
+      </div>
+      <div class="rm-wrap" id="rmCont"></div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="view" id="view-notes">
+      <div class="page-hdr">
+        <div class="page-title">الملاحظات الدراسية</div>
+        <div class="page-sub">تحفظ تلقائياً في جهازك</div>
+      </div>
+      <div style="padding:12px 14px">
+        <div style="max-width:760px; margin:0 auto">
+          <div class="sbar">
+            <span style="color:var(--t3)">🔍</span>
+            <input id="nSrch" type="text" placeholder="ابحث في ملاحظاتك..." oninput="searchN(this.value)">
+          </div>
+          <div id="nCont"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROMPTS -->
+    <div class="view" id="view-prompts">
+      <div class="page-hdr">
+        <div class="page-title">مولّد البرومبت الأكاديمي</div>
+        <div class="page-sub">اختر مستوى أو وحدة لتوليد برومبت دراسي متكامل</div>
+      </div>
+      <div class="ppage-grid">
+        <div>
+          <div class="slbl" style="padding:0 0 6px">اختر المستوى</div>
+          <select id="pLvl" class="pv-sel" onchange="onPLvlCh()">
+            <option value="">— اختر المستوى —</option>
+          </select>
+        </div>
+        <div>
+          <div class="slbl" style="padding:0 0 6px">اختر الوحدة (اختياري)</div>
+          <select id="pUnit" class="pv-sel" onchange="genP()">
+            <option value="">— البرومبت الكلي للمستوى —</option>
+          </select>
+        </div>
+        <div class="pcont">
+          <div class="phdr">
+            <span class="ptitle" id="pTitle">البرومبت الأكاديمي</span>
+            <button class="pcopy" onclick="copyP()">نسخ ✦</button>
+          </div>
+          <div class="pbox" id="pOut"><span style="color:var(--t3);font-style:italic">اختر مستوى لتوليد البرومبت...</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-wrap -->
+</div><!-- /layout -->
+
+<!-- ═══ MOBILE BOTTOM NAV ═══ -->
+<nav class="bot-nav">
+  <button class="bn-btn act" id="bnb-dashboard" onclick="goView('dashboard')">
+    <span class="bi">🏠</span><span>الرئيسية</span>
+  </button>
+  <button class="bn-btn" id="bnb-levels" onclick="goView('levels')">
+    <span class="bi">📚</span><span>المستويات</span>
+  </button>
+  <button class="bn-btn" id="bnb-roadmap" onclick="goView('roadmap')">
+    <span class="bi">🗺️</span><span>الخريطة</span>
+  </button>
+  <button class="bn-btn" id="bnb-notes" onclick="goView('notes')">
+    <span class="bi">📝</span><span>ملاحظات</span>
+  </button>
+  <button class="bn-btn" id="bnb-prompts" onclick="goView('prompts')">
+    <span class="bi">🤖</span><span>برومبت</span>
+  </button>
+</nav>
+
+<!-- ═══ DRAWER ═══ -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-hdr">
+    <span class="drawer-title">التنقل</span>
+    <button class="close-btn" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="slbl" style="padding-top:12px">التقدم الكلي</div>
+    <div class="ring-wrap">
+      <div class="pr">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle class="pr-track" cx="45" cy="45" r="38"/>
+          <circle class="pr-fill" id="prcM" cx="45" cy="45" r="38" stroke-dasharray="239" stroke-dashoffset="239"/>
+        </svg>
+        <div class="pr-center">
+          <span class="pr-pct" id="prPctM">0%</span>
+          <span class="pr-lbl">مكتمل</span>
+        </div>
+      </div>
+    </div>
+    <div class="sgrid">
+      <div class="sc"><div class="sv">13</div><div class="sl">المستويات</div></div>
+      <div class="sc"><div class="sv" id="totUM">0</div><div class="sl">الوحدات</div></div>
+      <div class="sc"><div class="sv" id="doneUM">0</div><div class="sl">مكتملة</div></div>
+      <div class="sc"><div class="sv" id="ipUM">0</div><div class="sl">جارية</div></div>
+    </div>
+    <div class="slbl">المستويات</div>
+    <div class="lvl-list" id="sbM"></div>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toastEl"></div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+var CUR = [
+  {id:1, name:"أساسيات القصة الكتابية", nameEn:"Foundations of the Biblical Story", icon:"📜",
+   units:["القصة الكبرى: من الخلق إلى الخليقة الجديدة","الخلق وطبيعة الله الخالق","السقوط ومفهوم الخطية الجذرية","الوعد والعهد كمحور القصة","الهيكل السردي للكتاب المقدس","وحدة العهدين القديم والجديد"]},
+  {id:2, name:"لاهوت العهد القديم", nameEn:"Old Testament Theology", icon:"🕍",
+   units:["الخليقة في العهد القديم","إسرائيل وعهد إبراهيم","الشريعة والعهد الموسوي","الهيكل والعبادة","حركة الحكمة في العهد القديم","النبوة والرجاء المسياني","المزامير كتعبير لاهوتي وعبادي"]},
+  {id:3, name:"لاهوت العهد الجديد", nameEn:"New Testament Theology", icon:"✝️",
+   units:["الإنجيل كبشارة بالملكوت","ملكوت الله في تعليم يسوع","كنيسة الرسل في سفر الأعمال","الرسالة والانتشار","لاهوت يوحنا — النور والحياة","الرجاء الأخروي في العهد الجديد"]},
+  {id:4, name:"شخص وعمل المسيح", nameEn:"Person and Work of Christ", icon:"👑",
+   units:["التجسد — الله يصير إنساناً","حياة يسوع وتعليمه","معنى الصليب والكفارة","القيامة وأهميتها اللاهوتية","الصعود والشفاعة","مجيء المسيح الثاني"]},
+  {id:5, name:"لاهوت بولس", nameEn:"Pauline Theology", icon:"📩",
+   units:["إنجيل بولس وخدمته","التبرير بالإيمان","الاتحاد بالمسيح — In Christ","الناموس والنعمة","الروح القدس عند بولس","إسرائيل والأمم في لاهوت بولس","الكنيسة كجسد المسيح"]},
+  {id:6, name:"الروح القدس", nameEn:"Pneumatology", icon:"🕊️",
+   units:["الروح القدس في العهد القديم","الروح في حياة يسوع","سكنى الروح في المؤمن","التقديس وعمل الروح","المواهب الروحية","الروح والإرشاد والصلاة","ثمر الروح في الحياة اليومية"]},
+  {id:7, name:"الخلاص", nameEn:"Soteriology", icon:"⚓",
+   units:["مشكلة الإنسان والخطية","النعمة والعهد","الكفارة والصليب","التبرير","الاتحاد بالمسيح","التبني والبنوة","التقديس","الثبات والجهاد الروحي","التمجيد والخليقة الجديدة"]},
+  {id:8, name:"الهوية المسيحية", nameEn:"Christian Identity", icon:"🪞",
+   units:["الإنسان على صورة الله","البنوة والتبني","الحياة الجديدة في المسيح","القداسة والحياة المتجددة","الهوية وسط الألم والتجربة","الرجاء والهوية الأبدية"]},
+  {id:9, name:"الكنيسة", nameEn:"Ecclesiology", icon:"⛪",
+   units:["طبيعة الكنيسة وأهدافها","الكنيسة كجسد المسيح","الشركة والجماعة","الأسرار المقدسة والعبادة","القيادة والخدمة","التأديب الكنسي","الكنيسة والإرسالية"]},
+  {id:10, name:"الملكوت والإرسالية", nameEn:"Kingdom and Mission", icon:"🌍",
+   units:["ملكوت الله — الآن وليس بعد","الإرسالية كمشاركة في عمل الله","التلمذة والتكوين الروحي","العدالة والشهادة في العالم","الكنيسة ومسؤوليتها الاجتماعية","حضور الله في العالم"]},
+  {id:11, name:"اللاهوت النظامي", nameEn:"Systematic Theology", icon:"🏛️",
+   units:["علم الله — طبيعته وصفاته","علم الوحي — الكتاب المقدس","علم الإنسان","علم الخطية","علم المسيح","علم الروح القدس","علم الكنيسة","علم الأخرويات"]},
+  {id:12, name:"الأخرويات", nameEn:"Eschatology", icon:"🌅",
+   units:["الموت والحياة الأبدية","القيامة الجسدية","الدينونة الأخيرة","السماء وحضور الله","الجحيم والعدالة الإلهية","الملك الألفي ومدارسه","الخليقة الجديدة كاكتمال القصة"]},
+  {id:13, name:"الرؤية التكاملية النهائية", nameEn:"Integrated Theological Vision", icon:"✨",
+   units:["وحدة الكتاب المقدس","العلاقة بين العهد القديم والجديد","اللاهوت والروحانية المعاشة","اللاهوت والخدمة والرسالة","بناء رؤية لاهوتية شخصية","القيادة والتعليم اللاهوتي"]}
+];
+
+var STAGES = [
+  {icon:"🌌", title:"الخلق",        desc:"البداية — الله يخلق ويُعلن ويُعطي هوية",           cls:"cr", lvls:[1]},
+  {icon:"🍂", title:"السقوط",       desc:"الكسر — الإنسان يبتعد والله يعد بالفداء",          cls:"fl", lvls:[1,7]},
+  {icon:"⭐", title:"إسرائيل",      desc:"العهد — الله يختار شعباً ليكون مثالاً للعالم",    cls:"is", lvls:[2]},
+  {icon:"🗣️", title:"الأنبياء",    desc:"الرجاء — الله يعد بملك وعهد جديد",                cls:"pr", lvls:[2,3]},
+  {icon:"✝️", title:"المسيح",       desc:"الاكتمال — يسوع يُحقق كل الوعود ويفتح الباب",    cls:"ch", lvls:[3,4,5,7]},
+  {icon:"🕊️", title:"الكنيسة",    desc:"الشركة — شعب الله الجديد يحمل الإنجيل",           cls:"cu", lvls:[6,8,9,10,11]},
+  {icon:"🌅", title:"الخليقة الجديدة", desc:"الاكتمال التام — الله يجعل كل شيء جديداً",  cls:"nc", lvls:[10,12,13]}
+];
+
+// ============================================================
+// STATE
+// ============================================================
+var S = {
+  us: {},       // unit statuses: key -> 'ns'|'ip'|'dn'
+  notes: {},    // notes: key -> string
+  selLvl: null,
+  selUnit: null,
+  curView: 'dashboard',
+  dTab: 'prompt',
+  streak: 1,
+  openSb: {},   // sidebar open levels
+  openCard: {}  // level card open
+};
+
+function loadS() {
+  try {
+    var d = localStorage.getItem('tmdb6');
+    if (d) { var p = JSON.parse(d); for (var k in p) S[k] = p[k]; }
+  } catch(e) {}
+  try {
+    var lv = localStorage.getItem('tmdb_lv6');
+    var td = new Date().toDateString();
+    if (lv !== td) {
+      var yd = new Date(Date.now() - 86400000).toDateString();
+      if (lv === yd) S.streak = (S.streak || 1) + 1;
+      else if (!lv) S.streak = 1;
+      localStorage.setItem('tmdb_lv6', td);
+    }
+  } catch(e) {}
+}
+
+function saveS() {
+  try { localStorage.setItem('tmdb6', JSON.stringify(S)); } catch(e) {}
+}
+
+function gus(lid, idx) { return S.us['L'+lid+'U'+idx] || 'ns'; }
+function sus(lid, idx, st) { S.us['L'+lid+'U'+idx] = st; saveS(); refreshAll(); }
+
+function totU() { var t=0; for(var i=0;i<CUR.length;i++) t+=CUR[i].units.length; return t; }
+function doneU() { var d=0; for(var k in S.us) if(S.us[k]==='dn') d++; return d; }
+function ipU()   { var d=0; for(var k in S.us) if(S.us[k]==='ip') d++; return d; }
+
+function lvProg(l) {
+  var t = l.units.length, d = 0;
+  for (var i=0; i<t; i++) if (gus(l.id,i)==='dn') d++;
+  return { t:t, d:d, p: t ? Math.round(d/t*100) : 0 };
+}
+
+function ovPct() { var t=totU(), d=doneU(); return t ? Math.round(d/t*100) : 0; }
+
+// ============================================================
+// DRAWER
+// ============================================================
+function openDrawer() {
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+// ============================================================
+// REFRESH
+// ============================================================
+function refreshAll() {
+  updStats();
+  renderSbList('sbD');
+  renderSbList('sbM');
+  renderDash();
+  if (S.curView === 'levels') renderLvs();
+  if (S.curView === 'roadmap') renderRoadmap();
+  if (S.curView === 'notes') renderNotes();
+}
+
+function set(id, val) { var el=document.getElementById(id); if(el) el.textContent=val; }
+function setOff(id, off) { var el=document.getElementById(id); if(el) el.style.strokeDashoffset=off; }
+
+function updStats() {
+  var p = ovPct(), d = doneU(), ip = ipU(), t = totU();
+  var off = 239 - (239 * p / 100);
+  set('prPctD', p+'%'); set('prPctM', p+'%');
+  setOff('prcD', off);  setOff('prcM', off);
+  set('totUD', t);  set('totUM', t);
+  set('doneUD', d); set('doneUM', d);
+  set('ipUD', ip);  set('ipUM', ip);
+  set('stk', S.streak);
+}
+
+// ============================================================
+// SIDEBAR RENDER
+// ============================================================
+function renderSbList(cid) {
+  var c = document.getElementById(cid);
+  if (!c) return;
+  var html = '';
+  for (var i=0; i<CUR.length; i++) {
+    var l = CUR[i];
+    var pg = lvProg(l);
+    var isO = S.openSb[l.id];
+    var isA = S.selLvl === l.id;
+    var cls = 'li' + (isA ? ' act-li' : '') + (isO ? ' open-li' : '');
+    var ulH = '';
+    if (isO) {
+      for (var j=0; j<l.units.length; j++) {
+        var st = gus(l.id, j);
+        var isSel = S.selLvl===l.id && S.selUnit===j;
+        var dc = st==='ip' ? ' ip' : st==='dn' ? ' dn' : '';
+        ulH += '<div class="uit' + (isSel?' sel-u':'') + '" onclick="selU(' + l.id + ',' + j + ',\'' + cid + '\')">' +
+               '<div class="udot' + dc + '"></div>' +
+               '<span class="unm">' + l.units[j] + '</span></div>';
+      }
+    }
+    html += '<div class="' + cls + '">' +
+      '<div class="lh" onclick="togSb(' + l.id + ')">' +
+        '<span class="lnum">' + l.id + '</span>' +
+        '<span class="lnm">' + l.name + '</span>' +
+        '<span class="lchev">▶</span>' +
+      '</div>' +
+      '<div class="lprbar"><div class="lprfill" style="width:' + pg.p + '%"></div></div>' +
+      '<div class="ul">' + ulH + '</div>' +
+    '</div>';
+  }
+  c.innerHTML = html;
+}
+
+function togSb(lid) {
+  S.openSb[lid] = !S.openSb[lid];
+  if (S.openSb[lid]) {
+    S.selLvl = lid;
+    if (S.curView === 'levels') { S.openCard[lid] = true; }
+    updDP();
+  }
+  saveS();
+  renderSbList('sbD');
+  renderSbList('sbM');
+  if (S.curView === 'levels') renderLvs();
+}
+
+function selU(lid, idx, cid) {
+  S.selLvl = lid;
+  S.selUnit = idx;
+  saveS();
+  renderSbList('sbD');
+  renderSbList('sbM');
+  if (S.curView === 'levels') { renderLvs(); openDP(); updDP(); }
+  if (S.curView === 'prompts') genP();
+  if (cid === 'sbM') closeDrawer();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDash() {
+  var g = document.getElementById('dashGrid');
+  if (!g) return;
+  var t = totU(), d = doneU(), p = ovPct();
+
+  // Focus items
+  var items = [];
+  for (var li=0; li<CUR.length; li++) {
+    var l = CUR[li];
+    for (var ui=0; ui<l.units.length; ui++) {
+      if (gus(l.id, ui) === 'ip') items.push({l:l, u:l.units[ui], i:ui});
+    }
+  }
+  var focusH = '';
+  if (items.length === 0) {
+    focusH = '<div class="empty"><div class="empty-i">📖</div><div class="empty-t">حدّد وحدة كـ "جارية" لتظهر هنا</div></div>';
+  } else {
+    var shown = items.slice(0, 3);
+    for (var x=0; x<shown.length; x++) {
+      var it = shown[x];
+      focusH += '<div class="fi" onclick="selU(' + it.l.id + ',' + it.i + ',\'sbD\');goView(\'levels\')">' +
+        '<strong>' + it.l.icon + ' المستوى ' + it.l.id + ': ' + it.l.name + '</strong>' +
+        'الوحدة ' + (it.i+1) + ': ' + it.u +
+        '</div>';
+    }
+  }
+
+  // Level progress bars
+  var lpH = '';
+  for (var li=0; li<CUR.length; li++) {
+    var pg = lvProg(CUR[li]);
+    lpH += '<div class="lprow">' +
+      '<span class="lprow-n">' + CUR[li].id + '</span>' +
+      '<span class="lprow-nm">' + CUR[li].name + '</span>' +
+      '<div class="lprow-bar"><div class="lprow-fill" style="width:' + pg.p + '%"></div></div>' +
+      '<span class="lprow-cnt">' + pg.d + '/' + pg.t + '</span>' +
+      '</div>';
+  }
+
+  // Mini roadmap
+  var mrmH = '<div class="mrm">' +
+    '<div class="mrm-n">الخلق ✦</div><div class="mrm-a"></div>' +
+    '<div class="mrm-n">السقوط</div><div class="mrm-a"></div>' +
+    '<div class="mrm-n">إسرائيل</div><div class="mrm-a"></div>' +
+    '<div class="mrm-n">الأنبياء</div><div class="mrm-a"></div>' +
+    '<div class="mrm-n" style="color:var(--gold);border-color:var(--goldd)">المسيح ✦</div><div class="mrm-a"></div>' +
+    '<div class="mrm-n">الكنيسة</div><div class="mrm-a"></div>' +
+    '<div class="mrm-n" style="color:var(--eml);border-color:var(--em)">الخليقة الجديدة ✦</div>' +
+    '</div>';
+
+  var rqTitles = ["أساسيات القصة الكتابية — ابدأ هنا","لاهوت العهد القديم — الخلفية الكتابية","شخص وعمل المسيح — المحور المركزي","الخلاص — التبرير والاتحاد بالمسيح","الهوية المسيحية — التطبيق الروحي"];
+  var rqH = '';
+  for (var ri=0; ri<rqTitles.length; ri++) {
+    var num = ri < 9 ? '0'+(ri+1) : ''+(ri+1);
+    rqH += '<div class="qi" onclick="goView(\'levels\')"><div class="qi-n">' + num + '</div><span>' + rqTitles[ri] + '</span></div>';
+  }
+
+  g.innerHTML =
+    '<div class="card"><div class="clbl">المستويات</div><div class="cval">13</div><div class="csub">من الأسس إلى الرؤية التكاملية</div></div>' +
+    '<div class="card"><div class="clbl">الوحدات المكتملة</div><div class="cval">' + d + '</div><div class="csub">من ' + t + ' وحدة إجمالاً</div></div>' +
+    '<div class="card"><div class="clbl">نسبة التقدم</div><div class="cval">' + p + '%</div><div class="csub">التقدم الكلي في المنهج</div></div>' +
+    '<div class="card span2"><div class="clbl">التركيز الحالي</div>' + focusH + '</div>' +
+    '<div class="card"><div class="clbl">خريطة القصة الكتابية</div>' + mrmH + '</div>' +
+    '<div class="card span3"><div class="clbl">تقدم المستويات</div><div style="margin-top:4px">' + lpH + '</div></div>' +
+    '<div class="card span2"><div class="clbl">قائمة القراءة المقترحة</div>' + rqH + '</div>' +
+    '<div class="card"><div class="clbl">مواد المشروع</div><div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">' +
+      '<div class="qi"><div class="qi-n">📚</div><span>Belbin — أدوار الفريق ونقاط القوة</span></div>' +
+      '<div class="qi"><div class="qi-n">⚡</div><span>التدرج (Periodization) — الأحمال والتعافي</span></div>' +
+      '<div class="qi"><div class="qi-n">👑</div><span>داود ويوناثان (1صم 17–18)</span></div>' +
+      '<div class="qi"><div class="qi-n">📖</div><span>لاهوت بولس — مصادر المشروع</span></div>' +
+    '</div></div>';
+}
+
+// ============================================================
+// LEVELS VIEW
+// ============================================================
+function renderLvs() {
+  var c = document.getElementById('lvCont');
+  if (!c) return;
+  var html = '';
+  for (var li=0; li<CUR.length; li++) {
+    var l = CUR[li];
+    var pg = lvProg(l);
+    var isO = S.openCard[l.id];
+    var isA = S.selLvl === l.id;
+    var ucH = '';
+    if (isO) {
+      var sNames = ['لم تبدأ','جارية','مكتملة'];
+      var sCls   = ['ns','ip','dn'];
+      for (var ui=0; ui<l.units.length; ui++) {
+        var st = gus(l.id, ui);
+        var si = sCls.indexOf(st); if(si<0) si=0;
+        var isSel = S.selLvl===l.id && S.selUnit===ui;
+        var btns = '';
+        for (var bi=0; bi<3; bi++) {
+          var isAs = st===sCls[bi];
+          btns += '<button class="usb' + (isAs?' as':'') + '" onclick="event.stopPropagation();sus(' + l.id + ',' + ui + ',\'' + sCls[bi] + '\')">' + (bi===0?'◯':bi===1?'▶':'✓') + '</button>';
+        }
+        ucH += '<div class="uc' + (isSel?' sel-uc':'') + '" onclick="selU(' + l.id + ',' + ui + ',\'sbD\')">' +
+          '<div class="ucst ' + sCls[si] + '">' + sNames[si] + '</div>' +
+          '<div class="ucnm">' + l.units[ui] + '</div>' +
+          '<div class="ucacts">' + btns + '</div>' +
+          '</div>';
+      }
+    }
+    html += '<div class="lcard' + (isA?' act-lc':'') + (isO?' open-lc':'') + '">' +
+      '<div class="lch" onclick="togCard(' + l.id + ')">' +
+        '<div class="lcnum">' + l.id + '</div>' +
+        '<div class="lcinfo">' +
+          '<div class="lctitle">' + l.icon + ' ' + l.name + '</div>' +
+          '<div class="lcmeta"><span class="lccnt">' + pg.d + '/' + pg.t + ' وحدة</span><span class="lccnt" style="color:var(--gold)">' + pg.p + '%</span></div>' +
+          '<div class="lcpbar"><div class="lcpfill" style="width:' + pg.p + '%"></div></div>' +
+        '</div>' +
+        '<div class="lcbtns" onclick="event.stopPropagation()">' +
+          '<button class="btn btn-g" onclick="genLvlP(' + l.id + ')">🤖 برومبت</button>' +
+          '<button class="btn btn-gold" onclick="selLv(' + l.id + ')">دراسة</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ucgrid">' + ucH + '</div>' +
+    '</div>';
+  }
+  c.innerHTML = html;
+}
+
+function togCard(lid) { S.openCard[lid] = !S.openCard[lid]; saveS(); renderLvs(); }
+function selLv(lid) { S.selLvl=lid; S.selUnit=null; S.openCard[lid]=true; saveS(); renderLvs(); renderSbList('sbD'); renderSbList('sbM'); openDP(); updDP(); }
+
+// ============================================================
+// DETAIL PANEL
+// ============================================================
+function openDP() { document.getElementById('dpanel').classList.add('open'); updDP(); }
+function updDP() { if (S.curView !== 'levels') return; renderDTab(S.dTab); }
+
+function switchDTab(tab) {
+  S.dTab = tab;
+  var tabs = ['prompt','notes','info'];
+  for (var i=0; i<tabs.length; i++) {
+    var el = document.getElementById('dt-'+tabs[i]);
+    if (el) el.className = 'dtab' + (tabs[i]===tab ? ' act-dt' : '');
+  }
+  renderDTab(tab);
+}
+
+function getPT() {
+  if (!S.selLvl) return 'اختر مستوى';
+  var l = getL(S.selLvl);
+  return S.selUnit !== null ? l.name + ' — ' + l.units[S.selUnit] : l.name;
+}
+
+function getL(id) { for(var i=0;i<CUR.length;i++) if(CUR[i].id===id) return CUR[i]; return null; }
+
+function renderDTab(tab) {
+  var c = document.getElementById('dtabCont');
+  if (!S.selLvl) { c.innerHTML = '<div class="empty"><div class="empty-i">👆</div><div class="empty-t">اختر مستوى أو وحدة</div></div>'; return; }
+  var l = getL(S.selLvl);
+  if (tab === 'prompt') {
+    c.innerHTML = '<div class="pcont">' +
+      '<div class="phdr"><span class="ptitle">' + getPT() + '</span><button class="pcopy" onclick="copyDP()">نسخ ✦</button></div>' +
+      '<div class="pbox" id="dpBox">' + buildP(S.selLvl, S.selUnit) + '</div>' +
+    '</div>';
+  } else if (tab === 'notes') {
+    var k = S.selUnit !== null ? 'L'+S.selLvl+'U'+S.selUnit+'n' : 'L'+S.selLvl;
+    var sv2 = S.notes[k] || '';
+    c.innerHTML = '<div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
+        '<span style="font-size:11px;color:var(--t3)">' + getPT() + '</span>' +
+        '<span class="nsave" id="nsi">✓ محفوظ</span>' +
+      '</div>' +
+      '<textarea class="narea" placeholder="دوّن ملاحظاتك هنا..." id="dpNoteArea">' + escH(sv2) + '</textarea>' +
+    '</div>';
+    document.getElementById('dpNoteArea').oninput = function() { svNote(k, this.value); };
+  } else {
+    var pg = lvProg(l);
+    var ipCnt = 0;
+    for (var i=0; i<l.units.length; i++) if(gus(l.id,i)==='ip') ipCnt++;
+    var uRows = '';
+    for (var i=0; i<l.units.length; i++) {
+      var s = gus(l.id, i);
+      var col = s==='dn'?'var(--eml)': s==='ip'?'var(--amber)':'var(--t3)';
+      var sym = s==='dn'?'✓': s==='ip'?'▶':'◯';
+      uRows += '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr)">' +
+        '<span style="color:'+col+';font-size:12px">'+sym+'</span>' +
+        '<span style="font-size:11px;color:var(--t2)">'+l.units[i]+'</span>' +
+      '</div>';
+    }
+    c.innerHTML = '<div style="display:flex;flex-direction:column;gap:9px">' +
+      '<div class="fi" style="cursor:default"><strong>'+l.icon+' '+l.name+'</strong><span style="font-size:9px;color:var(--t3)">'+l.nameEn+'</span></div>' +
+      '<div class="sgrid" style="padding:0"><div class="sc"><div class="sv">'+pg.t+'</div><div class="sl">وحدات</div></div><div class="sc"><div class="sv">'+pg.d+'</div><div class="sl">مكتملة</div></div><div class="sc"><div class="sv">'+pg.p+'%</div><div class="sl">مكتمل</div></div><div class="sc"><div class="sv">'+ipCnt+'</div><div class="sl">جارية</div></div></div>' +
+      '<div>' + uRows + '</div>' +
+    '</div>';
+  }
+}
+
+function escH(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function svNote(k, v) { S.notes[k]=v; saveS(); var i=document.getElementById('nsi'); if(i){i.classList.add('vis');setTimeout(function(){i.classList.remove('vis')},2000);} }
+function copyDP() { var b=document.getElementById('dpBox'); if(b) navigator.clipboard.writeText(b.innerText).then(function(){toast('تم نسخ البرومبت ✓');}); }
+
+// ============================================================
+// ROADMAP
+// ============================================================
+function renderRoadmap() {
+  var c = document.getElementById('rmCont');
+  if (!c) return;
+  var html = '<div class="rm-title">✦ خريطة القصة الكتابية الكبرى ✦</div>';
+  for (var si=0; si<STAGES.length; si++) {
+    var st = STAGES[si];
+    var tags = '';
+    for (var li=0; li<st.lvls.length; li++) {
+      var l = getL(st.lvls[li]);
+      var pg = lvProg(l);
+      tags += '<span class="rm-tag" onclick="selLv('+l.id+');goView(\'levels\')">' + l.id + '. ' + l.name + ' (' + pg.p + '%)</span>';
+    }
+    html += '<div class="rm-stage"><div class="rm-node ' + st.cls + '">' +
+      '<span class="rm-icon">' + st.icon + '</span>' +
+      '<div class="rm-t">' + st.title + '</div>' +
+      '<div class="rm-d">' + st.desc + '</div>' +
+      '<div class="rm-tags">' + tags + '</div>' +
+    '</div></div>';
+    if (si < STAGES.length-1) html += '<div class="rm-conn"></div>';
+  }
+  c.innerHTML = html;
+}
+
+// ============================================================
+// NOTES VIEW
+// ============================================================
+function renderNotes() {
+  var c = document.getElementById('nCont');
+  if (!c) return;
+  var html = '';
+  for (var li=0; li<CUR.length; li++) {
+    var l = CUR[li];
+    var lk = 'L'+l.id;
+    var lv = S.notes[lk] || '';
+    var cnt = 0;
+    for (var k in S.notes) { if (k.indexOf('L'+l.id)===0 && S.notes[k]) cnt++; }
+    var unitAreas = '';
+    for (var ui=0; ui<l.units.length; ui++) {
+      var k2 = 'L'+l.id+'U'+ui+'n';
+      var v2 = S.notes[k2] || '';
+      unitAreas += '<div><div class="slbl" style="padding:0 0 4px">'+l.units[ui]+'</div>' +
+        '<textarea class="narea" style="min-height:55px;font-size:12px" placeholder="ملاحظات الوحدة..." data-key="'+k2+'">' + escH(v2) + '</textarea></div>';
+    }
+    html += '<div class="ncard" id="ncard'+l.id+'">' +
+      '<div class="nch" onclick="togNCard('+l.id+')">' +
+        '<span style="font-size:11px;color:var(--goldd);font-weight:700">'+l.id+'</span>' +
+        '<span style="font-size:13px;color:var(--t1);flex:1">'+l.icon+' '+l.name+'</span>' +
+        '<span style="font-size:9px;color:var(--t3)">'+cnt+' ملاحظة</span>' +
+        '<span id="nchev'+l.id+'" style="font-size:11px;color:var(--t3);margin-inline-start:6px;transition:transform .2s">▶</span>' +
+      '</div>' +
+      '<div class="ncb" id="ncb'+l.id+'">' +
+        '<div><div class="slbl" style="padding:0 0 4px">ملاحظة المستوى</div>' +
+        '<textarea class="narea" style="min-height:70px" placeholder="ملاحظاتك عن المستوى..." data-key="'+lk+'">'+escH(lv)+'</textarea></div>' +
+        '<div><div class="slbl" style="padding:0 0 6px">ملاحظات الوحدات</div><div style="display:flex;flex-direction:column;gap:8px">'+unitAreas+'</div></div>' +
+      '</div>' +
+    '</div>';
+  }
+  c.innerHTML = html;
+  // Attach events
+  var areas = c.querySelectorAll('textarea[data-key]');
+  for (var i=0; i<areas.length; i++) {
+    (function(ta){ ta.addEventListener('input', function(){ svNote(ta.getAttribute('data-key'), ta.value); }); })(areas[i]);
+  }
+}
+
+var _openNCards = {};
+function togNCard(lid) {
+  _openNCards[lid] = !_openNCards[lid];
+  var b = document.getElementById('ncb'+lid);
+  var chev = document.getElementById('nchev'+lid);
+  if (b) b.classList.toggle('show', _openNCards[lid]);
+  if (chev) chev.style.transform = _openNCards[lid] ? 'rotate(90deg)' : '';
+}
+
+function searchN(q) {
+  var areas = document.querySelectorAll('#nCont .narea');
+  for (var i=0; i<areas.length; i++) {
+    areas[i].style.borderColor = !q ? '' : (areas[i].value.indexOf(q) >= 0 ? 'var(--gold)' : '');
+  }
+}
+
+// ============================================================
+// PROMPTS
+// ============================================================
+function initPSelects() {
+  var ls = document.getElementById('pLvl');
+  if (!ls || ls.options.length > 1) return;
+  for (var i=0; i<CUR.length; i++) {
+    var o = document.createElement('option');
+    o.value = CUR[i].id;
+    o.textContent = CUR[i].id + '. ' + CUR[i].name;
+    ls.appendChild(o);
+  }
+}
+
+function onPLvlCh() {
+  var ls = document.getElementById('pLvl');
+  var us = document.getElementById('pUnit');
+  var lid = parseInt(ls.value);
+  us.innerHTML = '<option value="">— البرومبت الكلي للمستوى —</option>';
+  if (lid) {
+    var l = getL(lid);
+    for (var i=0; i<l.units.length; i++) {
+      var o = document.createElement('option');
+      o.value = i;
+      o.textContent = (i+1) + '. ' + l.units[i];
+      us.appendChild(o);
+    }
+    S.selLvl = lid; S.selUnit = null;
+  }
+  genP();
+}
+
+function genLvlP(lid) {
+  S.selLvl = lid; S.selUnit = null;
+  goView('prompts');
+  setTimeout(function() {
+    initPSelects();
+    var ls = document.getElementById('pLvl');
+    if (ls) { ls.value = lid; onPLvlCh(); }
+  }, 80);
+}
+
+function genP() {
+  var ls = document.getElementById('pLvl');
+  var us = document.getElementById('pUnit');
+  if (!ls) return;
+  var lid = parseInt(ls.value) || S.selLvl;
+  var uidx = (us && us.value !== '') ? parseInt(us.value) : (S.selUnit !== null ? S.selUnit : null);
+  var po = document.getElementById('pOut');
+  var te = document.getElementById('pTitle');
+  if (!lid) { if(po) po.innerHTML='<span style="color:var(--t3);font-style:italic">اختر مستوى لتوليد البرومبت...</span>'; return; }
+  var l = getL(lid);
+  var un = uidx !== null ? l.units[uidx] : null;
+  if (te) te.textContent = un ? l.name + ' — ' + un : l.name;
+  if (po) po.innerHTML = buildP(lid, uidx);
+}
+
+function copyP() { var b=document.getElementById('pOut'); if(b) navigator.clipboard.writeText(b.innerText).then(function(){toast('تم نسخ البرومبت ✓');}); }
+
+function buildP(lid, uidx) {
+  var l = getL(lid); if (!l) return '';
+  var un = uidx !== null ? l.units[uidx] : null;
+  var subj = un ? ('وحدة "' + un + '" ضمن المستوى "' + l.name + '"') : (' المستوى الكامل: "' + l.name + '"');
+  return '<span class="psh">═══ البرومبت الأكاديمي اللاهوتي ═══</span>' +
+'<span style="color:var(--t1);font-weight:600">أنت أستاذ لاهوت أكاديمي متخصص على مستوى الدراسات العليا.</span>' +
+'\n\n<span style="color:var(--t3)">الموضوع:</span> <span class="ph2">' + subj + '</span>' +
+'\n<span style="color:var(--t3)">المستوى:</span> ماجستير لاهوت — تحليل أكاديمي عميق' +
+'\n<span style="color:var(--t3)">اللغة:</span> العربية الأكاديمية المتسقة' +
+'\n<span class="psh">١. الفكرة الكبرى</span>' +
+'ما القضية الأساسية المركزية؟ ما السؤال الأعمق الذي يُجيب عنه هذا الموضوع لاهوتياً؟' +
+'\n<span class="psh">٢. الخلفية الكتابية</span>' +
+'النصوص الرئيسية مع التحليل التاريخي والأدبي واللاهوتي. المفردات اليونانية/العبرية الأساسية.' +
+'\n<span class="psh">٣. التطور داخل القصة الكتابية</span>' +
+'الخلق ← السقوط ← الآباء ← الشريعة ← الأنبياء ← المسيح ← الكنيسة ← الخليقة الجديدة.' +
+'\n<span class="psh">٤. التحليل اللاهوتي متعدد الأبعاد</span>' +
+'اللاهوت الكتابي | اللاهوت النظامي | لاهوت العهد القديم | لاهوت العهد الجديد | لاهوت بولس | لاهوت يوحنا.' +
+'\n<span class="psh">٥. المدارس الفكرية والآراء العلمية</span>' +
+'الممثلون — نقاط القوة والضعف — الاعتراضات والردود — الأثر على اللاهوت العملي.' +
+'\n<span class="psh">٦. ربط مصادر المشروع</span>' +
+'• Belbin: أدوار الفريق وفهم الجسد الواحد\n• Periodization: التدرج كمجاز تربوي روحي\n• داود ويوناثان (1صم 17-18): القرب والثقة والتفاني' +
+'\n<span class="psh">٧. الشخصيات الكتابية</span>' +
+'إبراهيم، موسى، داود، إشعياء، بطرس، بولس، يوحنا — كيف جسّدوا المفهوم؟' +
+'\n<span class="psh">٨. التأملات الروحية العميقة</span>' +
+'ماذا يكشف هذا عن قلب الله؟ ما معناه للهوية البشرية والروحية المعاشة؟' +
+'\n<span class="psh">٩. التطبيقات العملية</span>' +
+'الصلاة | العبادة | الهوية | العلاقات | القيادة | الخدمة | الألم | اتخاذ القرارات.' +
+'\n<span class="psh">١٠. الأخطاء والتشوهات الشائعة</span>' +
+'أبرز سوء الفهم، الانحرافات التاريخية والحديثة، وكيف نصحح بالتعليم الكتابي السليم.' +
+'\n<span class="psh">١١. الجداول والخرائط التحليلية</span>' +
+'جدول مقارنة المدارس | خريطة تطور المفهوم عبر الكانون | جدول الشخصيات | مخطط العلاقات اللاهوتية.' +
+'\n<span class="psh">١٢. أسئلة التفكير العميق</span>' +
+'5 أسئلة أكاديمية بحثية + 5 أسئلة تأملية روحية + 3 أسئلة تطبيقية للقيادة والرسالة.' +
+'\n<span class="psh">١٣. المراجع الأكاديمية</span>' +
+'الكتب والفصول من مواد المشروع + المراجع العلمية الموصى بها + كتب للتوسع المتقدم.' +
+'\n<span class="psh">═══ تعليمات البناء التراكمي ═══</span>' +
+'<span style="color:var(--t2)">اربط هذا الموضوع بما سبقه وما يأتي بعده. وضّح: كيف يبني على الأساس السابق ويمهّد للتالي. الهدف: شبكة معرفة لاهوتية متكاملة حية.</span>';
+}
+
+// ============================================================
+// VIEW SWITCHING
+// ============================================================
+function goView(v) {
+  S.curView = v;
+  // Hide all views
+  var views = document.querySelectorAll('.view');
+  for (var i=0; i<views.length; i++) views[i].classList.remove('act');
+  var vEl = document.getElementById('view-'+v);
+  if (vEl) vEl.classList.add('act');
+  // Desktop nav
+  var dnbs = document.querySelectorAll('.desk-nb');
+  for (var i=0; i<dnbs.length; i++) dnbs[i].classList.remove('act');
+  var dnb = document.getElementById('dnb-'+v);
+  if (dnb) dnb.classList.add('act');
+  // Bottom nav
+  var bnbs = document.querySelectorAll('.bn-btn');
+  for (var i=0; i<bnbs.length; i++) bnbs[i].classList.remove('act');
+  var bnb = document.getElementById('bnb-'+v);
+  if (bnb) bnb.classList.add('act');
+  // Render
+  if (v==='levels') renderLvs();
+  if (v==='roadmap') renderRoadmap();
+  if (v==='notes') renderNotes();
+  if (v==='prompts') { initPSelects(); if(S.selLvl){ var ls=document.getElementById('pLvl'); if(ls&&parseInt(ls.value)!==S.selLvl){ls.value=S.selLvl; onPLvlCh();} else genP(); } }
+  closeDrawer();
+  // Scroll top
+  var mw = document.getElementById('mainWrap');
+  if (mw) mw.scrollTop = 0;
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg) {
+  var t = document.getElementById('toastEl');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadS();
+refreshAll();
+
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeDrawer(); });
+</script>
+</body>
+</html>
